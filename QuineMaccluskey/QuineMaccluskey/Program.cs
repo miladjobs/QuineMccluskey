@@ -22,7 +22,7 @@ namespace QuineMaccluskey
             Console.WriteLine("Enter Each Minterm");
             for (int i = 0; i < mintermNumber; i++)
             {
-                Console.WriteLine($"Enter Minterm {i+1}");
+                Console.WriteLine($"Enter Minterm {i + 1}");
                 string number = Console.ReadLine();
                 Minterm minterm = new Minterm(number);
                 minterms.Add(minterm);
@@ -31,11 +31,11 @@ namespace QuineMaccluskey
             for (int i = 0; i < minterms.Count; i++)
             {
                 numberOfOne.Add(minterms[i].NumberofOnes);
-            }            
+            }
             int maxNumberOfOne = numberOfOne.Max();
             for (int i = 0; i < minterms.Count; i++)
             {
-                while ( minterms[i].BinaryCode.Length < variableCount) 
+                while (minterms[i].BinaryCode.Length < variableCount)
                 {
                     minterms[i].BinaryCode = '0' + minterms[i].BinaryCode;
                 }
@@ -48,35 +48,47 @@ namespace QuineMaccluskey
 
             Minterms groupMinterms = new Minterms(maxNumberOfOne);
             groupMinterms.GroupLists(minterms);
+            Minterms gp2 = GroupMintermCreate(groupMinterms);
+            gp2.SortGroupList();
+            Minterms gp3 = GroupMintermCreate(gp2);
+            gp3.SortGroupList();
+            //Create Function To Clean ListB
+            
+            
 
-
-            List<List<Minterm>> mintermList1 = new List<List<Minterm>>();
-            for (int i = 0; i < groupMinterms.GroupOfMinterms.Length-1; i++)
-            {
-                for (int j = 0; j < groupMinterms.GroupOfMinterms[i].Count; j++)
-                {
-                    for (int k = 0; k < groupMinterms.GroupOfMinterms[i+1].Count; k++)
-                    {
-                        if (CheckDifferent( groupMinterms.GroupOfMinterms[i][j].BinaryCode,groupMinterms.GroupOfMinterms[i+1][k].BinaryCode))
-                        {
-                            mintermList1.Add(NewGroupMake(groupMinterms, i, j, k));
-                        }
-                    }
-                }
-            }
-            Minterms mintermsGroup2 = new Minterms();
-            mintermsGroup2.GroupOfMinterms = new List<Minterm>[mintermList1.Count];
-            for (int i = 0; i < mintermList1.Count; i++)
-            {
-                mintermsGroup2.GroupOfMinterms[i] = mintermList1[i];
-            }
 
             #endregion
 
             Console.ReadLine();
         }
 
-        private static List<Minterm> NewGroupMake(Minterms groupMinterms, int i, int j, int k)
+        public static Minterms GroupMintermCreate(Minterms groupMinterms)
+        {
+            List<List<Minterm>> mintermList1 = new List<List<Minterm>>();
+            for (int i = 0; i < groupMinterms.GroupOfMinterms.Length - 1; i++)
+            {
+                for (int j = 0; j < groupMinterms.GroupOfMinterms[i].Count; j++)
+                {
+                    for (int k = 0; k < groupMinterms.GroupOfMinterms[i + 1].Count; k++)
+                    {
+                        if (CheckDifferent(groupMinterms.GroupOfMinterms[i][j].BinaryCode, groupMinterms.GroupOfMinterms[i + 1][k].BinaryCode))
+                        {
+                            mintermList1.Add(NewGroupMake(groupMinterms, i, j, k));
+                        }
+                    }
+                }
+            }
+            Minterms mintermsGroup2 = new Minterms(mintermList1.Count);
+            
+            for (int i = 0; i < mintermList1.Count; i++)
+            {
+                mintermsGroup2.GroupOfMinterms[i] = mintermList1[i];
+            }
+
+            return mintermsGroup2;
+        }
+
+        public static List<Minterm> NewGroupMake(Minterms groupMinterms, int i, int j, int k)
         {
             string result = GroupMake(groupMinterms.GroupOfMinterms[i][j].BinaryCode,
                                             groupMinterms.GroupOfMinterms[i + 1][k].BinaryCode);

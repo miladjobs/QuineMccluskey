@@ -5,3 +5,10 @@ F:\QuineMccluskey\QuineMaccluskey\QuineMaccluskey\bin\Debug\QuineMaccluskey.exe
 F:\QuineMccluskey\QuineMaccluskey\QuineMaccluskey\bin\Debug\QuineMaccluskey.pdb
 F:\QuineMccluskey\QuineMaccluskey\QuineMaccluskey\obj\Debug\QuineMaccluskey.exe
 F:\QuineMccluskey\QuineMaccluskey\QuineMaccluskey\obj\Debug\QuineMaccluskey.pdb
+F:\QuineMccluskey\QuineMccluskey\QuineMaccluskey\QuineMaccluskey\bin\Debug\QuineMaccluskey.exe.config
+F:\QuineMccluskey\QuineMccluskey\QuineMaccluskey\QuineMaccluskey\bin\Debug\QuineMaccluskey.exe
+F:\QuineMccluskey\QuineMccluskey\QuineMaccluskey\QuineMaccluskey\bin\Debug\QuineMaccluskey.pdb
+F:\QuineMccluskey\QuineMccluskey\QuineMaccluskey\QuineMaccluskey\obj\Debug\QuineMaccluskey.csprojAssemblyReference.cache
+F:\QuineMccluskey\QuineMccluskey\QuineMaccluskey\QuineMaccluskey\obj\Debug\QuineMaccluskey.csproj.CoreCompileInputs.cache
+F:\QuineMccluskey\QuineMccluskey\QuineMaccluskey\QuineMaccluskey\obj\Debug\QuineMaccluskey.exe
+F:\QuineMccluskey\QuineMccluskey\QuineMaccluskey\QuineMaccluskey\obj\Debug\QuineMaccluskey.pdb
