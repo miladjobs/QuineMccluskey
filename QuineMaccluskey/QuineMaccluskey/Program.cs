@@ -43,21 +43,62 @@ namespace QuineMaccluskey
 
             #endregion
 
-
-            #region While
-
+            #region FindeGroups
             Minterms groupMinterms = new Minterms(maxNumberOfOne);
             groupMinterms.GroupLists(minterms);
-            Minterms gp2 = GroupMintermCreate(groupMinterms);
-            gp2.SortGroupList();
-            Minterms gp3 = GroupMintermCreate(gp2);
-            gp3.SortGroupList();
-            //Create Function To Clean ListB
-            
-            
 
-
+            List<List<Implicant>> firstPrimeImplicants = new List<List<Implicant>>();
+            List<Implicant> implicants = new List<Implicant>();
+            for (int i = 0; i < groupMinterms.GroupOfMinterms.Length; i++)
+            {
+                for (int j = 0; j < groupMinterms.GroupOfMinterms[i].Count; j++)
+                {
+                    Implicant implicant = new Implicant(new List<Minterm>() { groupMinterms.GroupOfMinterms[i][j] });
+                    implicants.Add(implicant);
+                }
+            }
+            firstPrimeImplicants.Add(implicants);
+            Minterms gpMinterms = groupMinterms;
+            while (true)
+            {
+                Minterms gp = GroupMintermCreate(gpMinterms);
+                gp.SortGroupList();
+                if (gp.GroupOfMinterms.Length == 0)
+                {
+                    break;
+                }
+                List<Implicant> implicantsInWhileList = new List<Implicant>();
+                for (int i = 0; i < gp.GroupOfMinterms.Length; i++)
+                {
+                    List<Minterm> implicantMinterms = new List<Minterm>();
+                    for (int j = 0; j < gp.GroupOfMinterms[i].Count; j++)
+                    {
+                        implicantMinterms.Add(gp.GroupOfMinterms[i][j]);
+                    }
+                    Implicant implicant = new Implicant(implicantMinterms);
+                    implicantsInWhileList.Add(implicant);
+                }
+                firstPrimeImplicants.Add(implicantsInWhileList);
+                gpMinterms = gp;
+            }
             #endregion
+
+            for (int i=firstPrimeImplicants.Count-1;i>=0;i--)
+            {
+                for (int j = 0; j < firstPrimeImplicants[i].Count; j++)
+                {
+                    if (firstPrimeImplicants[i][j].Status)
+                    {
+                        for (int k = 0; k < i; k++)
+                        {
+                            for (int l = 0; l < firstPrimeImplicants[k].Count; l++)
+                            {
+                                //Create Function Create
+                            } 
+                        }
+                    }
+                }
+            }
 
             Console.ReadLine();
         }
@@ -137,6 +178,23 @@ namespace QuineMaccluskey
             }
 
             return result;
+        }
+
+        public static bool CheckEqual(Implicant gic1, Implicant sic2) //Complete It
+        {
+            bool restult = false;
+            for (int i = 0; i < gic1.Minterms.Count; i++)
+            {
+                for (int j = 0; j < sic2.Minterms.Count; j++)
+                {
+                    if (true)
+                    {
+                        
+                    } 
+                }
+            }
+
+            return restult;
         }
     }
 }

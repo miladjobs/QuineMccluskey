@@ -71,6 +71,11 @@ namespace QuineMaccluskey
                     }
                 }
             }
+
+            for (int i = 0; i < newMinterms.Length; i++)
+            {
+                newMinterms[i] = Minterms.SortList(newMinterms[i]);
+            }
             this.GroupOfMinterms = new List<Minterm>[newMinterms.Length];
             this.GroupOfMinterms = newMinterms;
 
@@ -94,6 +99,31 @@ namespace QuineMaccluskey
             for (int i = 0; i < list.Count; i++)
             {
                 if (list[i] != " ")
+                {
+                    result.Add(list[i]);
+                }
+            }
+
+            return result;
+        }
+
+        public static List<Minterm> SortList(List<Minterm> list)
+        {
+            List<Minterm> result = new List<Minterm>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                for (int j = i+1; j < list.Count; j++)
+                {
+                    if (list[i].Number == list[j].Number)
+                    {
+                        list[j].Number = " ";
+                    }
+                }
+            }
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].Number != " ")
                 {
                     result.Add(list[i]);
                 }
