@@ -2,7 +2,7 @@
 
 namespace QuineMaccluskey
 {
-    public class Minterm
+    public class Minterm : IEquatable<Minterm>
     {
         public string Number { get; set; } 
         public string BinaryCode { get; set; }
@@ -39,6 +39,27 @@ namespace QuineMaccluskey
             }
 
             return a.ToString();
+        }
+
+
+        public bool Equals(Minterm other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return string.Equals(Number, other.Number);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Minterm) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Number != null ? Number.GetHashCode() : 0);
         }
     }
 }

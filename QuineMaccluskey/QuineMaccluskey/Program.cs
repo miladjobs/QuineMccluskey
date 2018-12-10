@@ -83,7 +83,9 @@ namespace QuineMaccluskey
             }
             #endregion
 
-            for (int i=firstPrimeImplicants.Count-1;i>=0;i--)
+            #region PrimeImplicantCreate
+
+            for (int i=firstPrimeImplicants.Count-1;i>=0;i--) //For Create Prime Implicant
             {
                 for (int j = 0; j < firstPrimeImplicants[i].Count; j++)
                 {
@@ -93,12 +95,31 @@ namespace QuineMaccluskey
                         {
                             for (int l = 0; l < firstPrimeImplicants[k].Count; l++)
                             {
-                                //Create Function Create
+                                if (CheckEqual(firstPrimeImplicants[i][j],firstPrimeImplicants[k][l]))
+                                {
+                                    firstPrimeImplicants[k][l].Status = false;
+                                }
                             } 
                         }
                     }
                 }
             }
+
+            List<Implicant> primeImplicants = new List<Implicant>();
+            for (int i = 0; i < firstPrimeImplicants.Count; i++)
+            {
+                for (int j = 0; j < firstPrimeImplicants[i].Count; j++)
+                {
+                    if (firstPrimeImplicants[i][j].Status )
+                    {
+                        primeImplicants.Add(firstPrimeImplicants[i][j]);
+                    }
+                }
+            }
+
+            #endregion
+
+
 
             Console.ReadLine();
         }
@@ -180,20 +201,16 @@ namespace QuineMaccluskey
             return result;
         }
 
-        public static bool CheckEqual(Implicant gic1, Implicant sic2) //Complete It
+        public static bool CheckEqual(Implicant gic1, Implicant sic2) 
         {
-            bool restult = false;
-            for (int i = 0; i < gic1.Minterms.Count; i++)
+            bool restult = true;
+            for (int i = 0; i < sic2.Minterms.Count; i++)
             {
-                for (int j = 0; j < sic2.Minterms.Count; j++)
+                if (! gic1.Minterms.Contains(sic2.Minterms[i]))
                 {
-                    if (true)
-                    {
-                        
-                    } 
+                    restult = false;
                 }
             }
-
             return restult;
         }
     }

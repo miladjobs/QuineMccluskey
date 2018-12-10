@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace QuineMaccluskey
 {
-    public class Minterms
+    public class Minterms 
     {
         public List<Minterm>[] GroupOfMinterms;
         private int maxNumber;
