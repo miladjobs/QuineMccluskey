@@ -22,13 +22,21 @@ namespace QuineMaccluskey
         public void GroupLists(List<Minterm> minterms)
         {
             int maxNumberOfOne = this.maxNumber;
-            List<Minterm>[] mintermGroups = new List<Minterm>[maxNumberOfOne];
-            for (int i = 0; i < maxNumberOfOne; i++)
+            List<Minterm>[] mintermGroups = new List<Minterm>[maxNumberOfOne +1];
+            mintermGroups[0] = new List<Minterm>();
+            for (int i = 0; i < minterms.Count; i++)
+            {
+                if (minterms[i].NumberofOnes == 0)
+                {
+                    mintermGroups[0].Add(minterms[i]);
+                }
+            }
+            for (int i = 1; i <= maxNumberOfOne; i++)
             {
                 mintermGroups[i] = new List<Minterm>();
                 for (int j = 0; j < minterms.Count; j++)
                 {
-                    if (minterms[j].NumberofOnes == i + 1)
+                    if (minterms[j].NumberofOnes == i )
                     {
                         mintermGroups[i].Add(minterms[j]);
                     }

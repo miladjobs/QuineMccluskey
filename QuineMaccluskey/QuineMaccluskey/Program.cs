@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -18,7 +20,7 @@ namespace QuineMaccluskey
             int variableCount = int.Parse(Console.ReadLine());
             Console.WriteLine("Enter Numbers Of minterm");
             int mintermNumber = int.Parse(Console.ReadLine());
-            List<Minterm> minterms = new List<Minterm>();
+            List<Minterm> minterms = new List<Minterm>(); //Dar marhale Akhar be in esm Zakhire Shode
             Console.WriteLine("Enter Each Minterm");
             for (int i = 0; i < mintermNumber; i++)
             {
@@ -59,9 +61,19 @@ namespace QuineMaccluskey
             }
             firstPrimeImplicants.Add(implicants);
             Minterms gpMinterms = groupMinterms;
+            bool x = true;
             while (true)
             {
-                Minterms gp = GroupMintermCreate(gpMinterms);
+                Minterms gp;
+                if (x)
+                {
+                    gp = GroupMintermCreate(gpMinterms,x);
+                    x = false;
+                }
+                else
+                {
+                     gp = GroupMintermCreate(gpMinterms, x);
+                }
                 gp.SortGroupList();
                 if (gp.GroupOfMinterms.Length == 0)
                 {
@@ -119,23 +131,181 @@ namespace QuineMaccluskey
 
             #endregion
 
+            #region FindeFinallImplicants
 
+            List<Implicant> finalImplicants = new List<Implicant>();
+            bool[] mintermsUse = new bool[minterms.Count];
+            for (int i = 0; i < mintermsUse.Length; i++)
+            {
+                mintermsUse[i] = false;
+            }
+
+            bool[,] implicantsTable = new  bool[primeImplicants.Count,minterms.Count];
+            for (int i = 0; i < minterms.Count; i++)
+            {
+                for (int j = 0; j < primeImplicants.Count; j++)
+                {
+                    if (primeImplicants[j].Minterms.Contains(minterms[i]))
+                    {
+                        implicantsTable[j, i] = true;
+                    }
+                    else
+                    {
+                        implicantsTable[j, i] = false;
+                    }
+                }
+            }
+
+            while (!CheckMinterUse(mintermsUse))
+            {
+                #region FindeEssential
+
+                List<int> essentialList = new List<int>();
+                for (int i = 0; i < implicantsTable.GetLength(1); i++)
+                {
+                    if (CheckEssentialImplicants(implicantsTable,i))
+                    {
+                        essentialList.Add(SendIndexOfEssential(implicantsTable,i));
+                    }
+                }
+
+                for (int i = 0; i < essentialList.Count; i++)
+                {
+                    for (int j = 0; j < minterms.Count; j++)
+                    {
+                        if (primeImplicants[essentialList[i]].Minterms.Contains(minterms[j]))
+                        {
+                            mintermsUse[j] = true;
+                        }
+                    }
+                    finalImplicants.Add(primeImplicants[essentialList[i]]);
+                }
+
+                if (essentialList.Count>0)
+                {
+                    implicantsTable = UpdateImplicantsTable(implicantsTable, essentialList);
+                    continue;
+                }
+
+                #endregion
+
+                #region ColumnLaw
+
+                for (int i = 0; i < implicantsTable.GetLength(1); i++)
+                {
+                    for (int j = 0; j < implicantsTable.GetLength(1); j++)
+                    {
+                        if (NumberOfDifferences(implicantsTable,i,j,false) == 1)
+                        {
+                            if (NumberOfTrue(implicantsTable,i,false) > NumberOfTrue(implicantsTable, j, false))
+                            {
+                                implicantsTable = UpdateImplicantsTable(implicantsTable, i, false);
+                            }
+                            else
+                            {
+                                implicantsTable = UpdateImplicantsTable(implicantsTable, j, false);
+                            }
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region RowLaw
+
+                for (int i = 0; i < implicantsTable.GetLength(0); i++)
+                {
+                    for (int j = 0; j < implicantsTable.GetLength(0); j++)
+                    {
+                        if (i == j)
+                        {
+                            continue;
+                        }
+
+                        if (NumberOfDifferences(implicantsTable,i,j,true) ==1)
+                        {
+                            if (NumberOfTrue(implicantsTable,i,true) > NumberOfTrue(implicantsTable, j, true))
+                            {
+                                implicantsTable = UpdateImplicantsTable(implicantsTable, j, true);
+                            }
+                            else
+                            {
+                                implicantsTable = UpdateImplicantsTable(implicantsTable, i, true);
+                            }
+                        }
+                        else if (NumberOfDifferences(implicantsTable,i,j,true) == 0)
+                        {
+                            implicantsTable = UpdateImplicantsTable(implicantsTable, j, true);
+                        }
+                        
+                    }
+                }
+
+                #endregion
+
+            }
+
+            List<Implicant> finalImplicantSorted = new List<Implicant>();
+            for (int i = 0; i < finalImplicants.Count; i++)
+            {
+                if (!finalImplicantSorted.Contains(finalImplicants[i]))
+                {
+                    finalImplicantSorted.Add(finalImplicants[i]);
+                }
+            }
+
+            #endregion
+
+            string result = "";
+            for (int i = 0; i < finalImplicantSorted.Count; i++)
+            {
+                result += finalImplicantSorted[i].ToString() ;
+                if (i % 10 == 0 && i!=0)
+                {
+                    result += "\n";
+                }
+            }
+            Console.Clear();
+            Console.WriteLine("<<<<<<<<<Result Of Simplify>>>>>>>> \n\n");
+            Console.WriteLine(result.Remove(result.Length-1));
 
             Console.ReadLine();
         }
 
-        public static Minterms GroupMintermCreate(Minterms groupMinterms)
+        public static Minterms GroupMintermCreate(Minterms groupMinterms , bool x) //Moshkel
         {
             List<List<Minterm>> mintermList1 = new List<List<Minterm>>();
-            for (int i = 0; i < groupMinterms.GroupOfMinterms.Length - 1; i++)
+            if (x == false)
             {
-                for (int j = 0; j < groupMinterms.GroupOfMinterms[i].Count; j++)
+                for (int i = 0; i < groupMinterms.GroupOfMinterms.Length; i++)
                 {
-                    for (int k = 0; k < groupMinterms.GroupOfMinterms[i + 1].Count; k++)
+                    for (int j = 0; j < groupMinterms.GroupOfMinterms.Length; j++)
                     {
-                        if (CheckDifferent(groupMinterms.GroupOfMinterms[i][j].BinaryCode, groupMinterms.GroupOfMinterms[i + 1][k].BinaryCode))
+                        if (i == j)
                         {
-                            mintermList1.Add(NewGroupMake(groupMinterms, i, j, k));
+                            continue;
+                        }
+
+                        if( CheckDifferent(groupMinterms.GroupOfMinterms[i][0].BinaryCode,groupMinterms.GroupOfMinterms[j][0].BinaryCode))
+                        {
+                            mintermList1.Add(NewGroupMake(groupMinterms, i, j));
+                        }
+                    }
+                }
+            }
+
+            else 
+            {
+                for (int i = 0; i < groupMinterms.GroupOfMinterms.Length - 1; i++)
+                {
+                    for (int j = 0; j < groupMinterms.GroupOfMinterms[i].Count; j++)
+                    {
+                        for (int k = 0; k < groupMinterms.GroupOfMinterms[i + 1].Count; k++)
+                        {
+                            if (CheckDifferent(groupMinterms.GroupOfMinterms[i][j].BinaryCode, groupMinterms.GroupOfMinterms[i + 1][k].BinaryCode))
+                            {
+                                mintermList1.Add(NewGroupMake(groupMinterms, i, j, k));
+                            }
                         }
                     }
                 }
@@ -159,6 +329,27 @@ namespace QuineMaccluskey
             minterm1.BinaryCode = result;
             minterm2.BinaryCode = result;
             List<Minterm> MintermsList = new List<Minterm>() { minterm1, minterm2 };
+            return MintermsList;
+        }
+
+        public static List<Minterm> NewGroupMake(Minterms groupMinterms, int i, int j)
+        {
+            string result = GroupMake(groupMinterms.GroupOfMinterms[i][0].BinaryCode,
+                groupMinterms.GroupOfMinterms[j][0].BinaryCode);
+            List<Minterm> MintermsList = new List<Minterm>();
+            for (int k = 0; k < groupMinterms.GroupOfMinterms[i].Count; k++)
+            {
+                Minterm minterm = new Minterm(groupMinterms.GroupOfMinterms[i][k].Number);
+                minterm.BinaryCode = result;
+                MintermsList.Add(minterm);
+            }
+            for (int k = 0; k < groupMinterms.GroupOfMinterms[j].Count; k++)
+            {
+                Minterm minterm = new Minterm(groupMinterms.GroupOfMinterms[j][k].Number);
+                minterm.BinaryCode = result;
+                MintermsList.Add(minterm);
+            }
+
             return MintermsList;
         }
 
@@ -212,6 +403,157 @@ namespace QuineMaccluskey
                 }
             }
             return restult;
+        }
+
+        public static bool CheckEssentialImplicants(bool[,] table, int indexJ)
+        {
+            int sum = 0;
+            for (int i = 0; i < table.GetLength(0); i++)
+            {
+                if (table[i,indexJ])
+                {
+                    sum++;
+                }
+            }
+
+            if (sum == 1)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static int SendIndexOfEssential(bool[,] table, int indexJ)
+        {
+            int result = -1;
+            for (int i = 0; i < table.GetLength(0); i++)
+            {
+                if (table[i,indexJ])
+                {
+                    result = i;
+                }
+            }
+
+            return result;
+        }
+
+        public static bool CheckMinterUse(bool[] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i] == false)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static bool[,] UpdateImplicantsTable(bool[,] firstTable, List<int> rowIndexes)
+        {
+            List<int> columnIndexes = new List<int>();
+            for (int i = 0; i < rowIndexes.Count; i++)
+            {
+                for (int j = 0; j < firstTable.GetLength(1); j++)
+                {
+                    if (firstTable[rowIndexes[i],j])
+                    {
+                        columnIndexes.Add(j);
+                        firstTable[rowIndexes[i], j] = false;
+                    }
+                }
+            }
+
+            for (int i = 0; i < columnIndexes.Count; i++)
+            {
+                for (int j = 0; j < firstTable.GetLength(0); j++)
+                {
+                    if (firstTable[j,columnIndexes[i]])
+                    {
+                        firstTable[j, columnIndexes[i]] = false;
+                    }
+                }
+            }
+
+            return firstTable;
+        }
+
+        public static bool[,] UpdateImplicantsTable(bool[,] firstTable, int index, bool row)
+        {
+            if (row)
+            {
+                for (int i = 0; i < firstTable.GetLength(1); i++)
+                {
+                    firstTable[index, i] = false;
+                }
+
+                return firstTable;
+            }
+            else
+            {
+                for (int i = 0; i < firstTable.GetLength(0); i++)
+                {
+                    firstTable[i, index] = false;
+                }
+
+                return firstTable;
+            }
+        }
+
+        public static int NumberOfDifferences(bool[,] table, int index1, int index2 ,bool row)
+        {
+            int sum = 0;
+            if (row)
+            {
+                for (int i = 0; i < table.GetLength(1); i++)
+                {
+                    if (table[index1,i] != table[index2,i])
+                    {
+                        sum++;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < table.GetLength(0); i++)
+                {
+                    if (table[i,index1] != table[i,index2])
+                    {
+                        sum++;
+                    }
+                }
+            }
+
+            return sum;
+        }
+
+        public static int NumberOfTrue(bool[,] table, int index, bool row)
+        {
+            int sum = 0;
+            if (row)
+            {
+                for (int i = 0; i < table.GetLength(1); i++)
+                {
+                    if (table[index,i])
+                    {
+                        sum++;
+                    }
+                } 
+            }
+            else
+            {
+                for (int i = 0; i < table.GetLength(0); i++)
+                {
+                    if (table[i,index])
+                    {
+                        sum++;
+                    }
+                }
+            }
+
+            return sum;
         }
     }
 }
