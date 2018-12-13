@@ -18,16 +18,29 @@ namespace QuineMaccluskey
 
             Console.WriteLine("Enter Number Of Variable");
             int variableCount = int.Parse(Console.ReadLine());
-            Console.WriteLine("Enter Numbers Of minterm");
-            int mintermNumber = int.Parse(Console.ReadLine());
-            List<Minterm> minterms = new List<Minterm>(); //Dar marhale Akhar be in esm Zakhire Shode
-            Console.WriteLine("Enter Each Minterm");
-            for (int i = 0; i < mintermNumber; i++)
+            Console.WriteLine(@"Enter List Of Minterms With ',' Beteween EachOther(Ba , minterm ha ra az ham joda konid va dar enteha Enter Bezanid) ");
+            Console.Write("Minterms:");
+            string lineInMinterms = Console.ReadLine();
+            List<Minterm> minterms = new List<Minterm>();
+            string[] inputStringMinterms = lineInMinterms.Split(',');
+            for (int i = 0; i < inputStringMinterms.Length; i++)
             {
-                Console.WriteLine($"Enter Minterm {i + 1}");
-                string number = Console.ReadLine();
+                string number = inputStringMinterms[i];
                 Minterm minterm = new Minterm(number);
                 minterms.Add(minterm);
+            }
+            List<Minterm> orginMinterms = minterms;
+            Console.WriteLine("Have You DontCares?(y:yes/n:no)");
+            if (Console.ReadKey().KeyChar == 'y')
+            {
+                Console.WriteLine("Enter List Of DontCares With ',' Beteween EachOther(Ba ','(kama) DontCare  ha ra az ham joda konid va dar enteha Enter Bezanid)");
+                Console.Write("DontCares:");
+                string[] lineInDontcares = Console.ReadLine().Split(',');
+                for (int i = 0; i < lineInDontcares.Length; i++)
+                {
+                    Minterm minterm = new Minterm(lineInDontcares[i]);
+                    minterms.Add(minterm);
+                }
             }
             List<int> numberOfOne = new List<int>();
             for (int i = 0; i < minterms.Count; i++)
@@ -134,18 +147,18 @@ namespace QuineMaccluskey
             #region FindeFinallImplicants
 
             List<Implicant> finalImplicants = new List<Implicant>();
-            bool[] mintermsUse = new bool[minterms.Count];
+            bool[] mintermsUse = new bool[orginMinterms.Count];
             for (int i = 0; i < mintermsUse.Length; i++)
             {
                 mintermsUse[i] = false;
             }
 
-            bool[,] implicantsTable = new  bool[primeImplicants.Count,minterms.Count];
-            for (int i = 0; i < minterms.Count; i++)
+            bool[,] implicantsTable = new  bool[primeImplicants.Count, orginMinterms.Count];
+            for (int i = 0; i < orginMinterms.Count; i++)
             {
                 for (int j = 0; j < primeImplicants.Count; j++)
                 {
-                    if (primeImplicants[j].Minterms.Contains(minterms[i]))
+                    if (primeImplicants[j].Minterms.Contains(orginMinterms[i]))
                     {
                         implicantsTable[j, i] = true;
                     }
@@ -171,9 +184,9 @@ namespace QuineMaccluskey
 
                 for (int i = 0; i < essentialList.Count; i++)
                 {
-                    for (int j = 0; j < minterms.Count; j++)
+                    for (int j = 0; j < orginMinterms.Count; j++)
                     {
-                        if (primeImplicants[essentialList[i]].Minterms.Contains(minterms[j]))
+                        if (primeImplicants[essentialList[i]].Minterms.Contains(orginMinterms[j]))
                         {
                             mintermsUse[j] = true;
                         }
